@@ -5,6 +5,7 @@ import 'package:providertemplate/services/service.locator.dart';
 
 class ChickenScreenViewModel extends ChangeNotifier {
   final ChickenService _chickenService = serviceLocator<ChickenService>();
+  final inputTextController = TextEditingController();
 
   List<ChickenPresentation> _allChicks = [];
   List<ChickenPresentation> get allChicks {
@@ -26,7 +27,8 @@ class ChickenScreenViewModel extends ChangeNotifier {
 
     chicks.forEach((chick) {
       String age = chick.age.toString();
-      res.add(ChickenPresentation(name: chick.name, age: age));
+      res.add(ChickenPresentation(
+          name: chick.name, age: age, description: chick.description));
     });
 
     return res;
@@ -36,11 +38,16 @@ class ChickenScreenViewModel extends ChangeNotifier {
     await _loadChicks();
     notifyListeners();
   }
+
+  void submitTextInput() {
+    print(inputTextController.text);
+  }
 }
 
 class ChickenPresentation {
   String name;
   String age;
+  String description;
 
-  ChickenPresentation({this.name, this.age});
+  ChickenPresentation({this.name, this.age, this.description});
 }

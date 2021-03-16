@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:path/path.dart';
@@ -26,10 +27,19 @@ class WebApiSql implements WebApi {
 
   Future<Database> init() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String dbPath = join(directory.path, 'database.db');
-    var database = openDatabase(dbPath, version: 1, onCreate: _onCreate);
+    log('db path: ' + directory.path);
+    String dbPath = join(directory.path, 'database1.db');
+    var database = await openDatabase(dbPath,
+        version: 2, onCreate: _onCreate, onUpgrade: _onUpgrade);
 
     return database;
+  }
+
+  // UPGRADE DATABASE TABLES
+  void _onUpgrade(Database db, int oldVersion, int newVersion) {
+    if (oldVersion < newVersion) {
+      db.execute("ALTER TABLE chicken ADD COLUMN description TEXT;");
+    }
   }
 
   void _onCreate(Database db, int version) {
@@ -37,7 +47,8 @@ class WebApiSql implements WebApi {
     CREATE TABLE chicken(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
-      age INTEGER)
+      age INTEGER,
+      description TEXT)
   ''');
     print("Database was created!");
   }
@@ -45,12 +56,18 @@ class WebApiSql implements WebApi {
   @override
   Future<List<Chicken>> fetchChickens() async {
     var client = await db;
-    client.insert('chicken', Chicken(age: 1, name: "Chiry").toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    client.insert('chicken', Chicken(age: 2, name: "Billy").toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
-    client.insert('chicken', Chicken(age: 1, name: "Kate").toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    // client.insert(
+    //     'chicken',
+    //     Chicken(
+    //             age: 1,
+    //             name: "Test db change",
+    //             description: "her we describe our chicken")
+    //         .toMap(),
+    //     conflictAlgorithm: ConflictAlgorithm.replace);
+    // client.insert('chicken', Chicken(age: 2, name: "Billy").toMap(),
+    //     conflictAlgorithm: ConflictAlgorithm.replace);
+    // client.insert('chicken', Chicken(age: 1, name: "Kate").toMap(),
+    //     conflictAlgorithm: ConflictAlgorithm.replace);
 
     final List<Map<String, dynamic>> maps = await client.query('chicken');
 
@@ -59,6 +76,7 @@ class WebApiSql implements WebApi {
         id: maps[i]['id'],
         name: maps[i]['name'],
         age: maps[i]['age'],
+        description: maps[i]['description'],
       );
     });
   }

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:providertemplate/business_logic/view_models/chicken_screen_viewmodel.dart';
 import 'package:providertemplate/services/service.locator.dart';
+import 'package:providertemplate/ui/views/detail_screen.dart';
+import './widgets/search_bar_widget.dart';
+import './widgets/icon_with_bg_widget.dart';
 
 class ChickenScreen extends StatefulWidget {
   @override
@@ -25,34 +28,52 @@ class _ChickenScreenState extends State<ChickenScreen> {
       child: Consumer<ChickenScreenViewModel>(
         builder: (context, model, child) => Scaffold(
           appBar: AppBar(title: Text('Chicken List'), actions: <Widget>[]),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              quoteCurrencyList(model),
-            ],
+          body: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SearchBarWidget(
+                      width: 260,
+                      inputTextController: model.inputTextController,
+                    ),
+                    IconWithBgWidget(
+                        assetImage: 'assets/iconsRawPlay.png',
+                        height: 44,
+                        width: 44,
+                        padding: 0,
+                        bgColor: 0xffffffff,
+                        onClick: () => model.submitTextInput())
+                  ],
+                ),
+                quoteCurrencyList(model),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Expanded quoteCurrencyList(ChickenScreenViewModel model) {
+  Widget quoteCurrencyList(ChickenScreenViewModel model) {
     return Expanded(
       child: ListView.builder(
         itemCount: model.allChicks.length,
         itemBuilder: (context, index) {
           return Card(
             child: ListTile(
-              leading: SizedBox(
-                width: 100,
-                child: Text(
-                  '${model.allChicks[index].name}',
-                  style: TextStyle(fontSize: 30),
-                ),
+              leading: IconWithBgWidget(
+                assetImage: 'assets/audio.png',
               ),
               title: Text(model.allChicks[index].name),
               subtitle: Text(model.allChicks[index].age),
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, DetailScreen.routName,
+                    arguments: model.allChicks[index]);
+              },
             ),
           );
         },

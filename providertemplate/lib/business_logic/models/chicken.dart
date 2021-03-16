@@ -15,13 +15,14 @@ class Chicken extends MapConvertible {
   String name;
   int age;
   int id;
+  String description;
 
   /// Tell json_serializable that "registration_date_millis" should be
   /// mapped to this property.
 //@JsonKey(name: 'registration_date_millis')
 //final int registrationDateMillis;
 
-  Chicken({this.name, this.age, this.id});
+  Chicken({this.name, this.age, this.id, this.description});
 
   factory Chicken.fromJson(Map<String, dynamic> json) =>
       _$ChickenFromJson(json);
@@ -30,12 +31,13 @@ class Chicken extends MapConvertible {
 
   @override
   MapConvertible fromMap(Map map) {
-    return Chicken(name: map['name'], age: map['age']);
+    return Chicken(
+        name: map['name'], age: map['age'], description: map['description']);
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'name': name, 'age': age};
+    return {'name': name, 'age': age, 'description': description};
   }
 }
 

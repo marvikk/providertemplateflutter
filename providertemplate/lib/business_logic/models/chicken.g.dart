@@ -8,12 +8,13 @@ part of 'chicken.dart';
 
 Chicken _$ChickenFromJson(Map<String, dynamic> json) {
   return Chicken(
-    name: json['name'] as String,
-    age: json['age'] as int,
-  );
+      name: json['name'] as String,
+      age: json['age'] as int,
+      description: json['description'] as String);
 }
 
 Map<String, dynamic> _$ChickenToJson(Chicken instance) => <String, dynamic>{
       'name': instance.name,
       'age': instance.age,
+      'description': instance.description
     };
